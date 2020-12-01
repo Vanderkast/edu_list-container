@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'idea'
+}
+
+group 'com.vanderkast.edu'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 11
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    devTest {
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+        java.srcDir "/src/devTest/java"
+        resources.srcDir "/src/devTest/resources"
+    }
+}
+
+idea {
+    module {
+        sourceDirs -= file('src/devTest/java')
+        testSourceDirs += file('src/devTest/java')
+    }
+}
+
+configurations {
+    devTestImplementation.extendsFrom testImplementation
+}
+
+task devTest(type: Test) {
+    description = 'Runs the developers tests.'
+    group = 'verification'
+    testClassesDirs = sourceSets.devTest.output.classesDirs
+    classpath = sourceSets.devTest.runtimeClasspath
+}
+
+devTest.finalizedBy test
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:3.6.28'
+}
